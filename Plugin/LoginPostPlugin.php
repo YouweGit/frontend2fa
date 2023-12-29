@@ -31,7 +31,7 @@ class LoginPostPlugin
     public function afterExecute(LoginPost $subject, Redirect $result): Redirect
     {
         if (!$this->config->isEnabled()) {
-            return $this;
+            return $result;
         }
 
         if ($this->customerSession->get2faSuccessful()) {

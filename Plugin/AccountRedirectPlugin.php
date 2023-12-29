@@ -13,9 +13,19 @@ class AccountRedirectPlugin
     {
     }
 
+    public function beforeGetRedirect(Redirect $subject): array
+    {
+        $beforeAuthUrl = $this->session->getBeforeAuthUrl(false);
+        if ($beforeAuthUrl) {
+            $this->customerSession->setBefore2faUrl($beforeAuthUrl);
+        }
+
+        return [];
+    }
+
     public function afterGetRedirectCookie(Redirect $subject, ?string $result): ?string
     {
-        if ($result && !$this->customerSession->getBefore2faUrl(false)) {
+        if ($result) {
             $this->customerSession->setBefore2faUrl($result);
         }
 
