@@ -15,7 +15,7 @@ class AccountRedirectPlugin
 
     public function beforeGetRedirect(Redirect $subject): array
     {
-        $beforeAuthUrl = $this->session->getBeforeAuthUrl(false);
+        $beforeAuthUrl = $this->customerSession->getBeforeAuthUrl(false);
         if ($beforeAuthUrl) {
             $this->customerSession->setBefore2faUrl($beforeAuthUrl);
         }

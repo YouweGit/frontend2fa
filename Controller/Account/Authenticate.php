@@ -9,7 +9,10 @@
 namespace Elgentos\Frontend2FA\Controller\Account;
 
 use Elgentos\Frontend2FA\Model\SecretFactory;
+use Magento\Customer\Model\Url as CustomerUrl;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Url\DecoderInterface;
+use Psr\Log\LoggerInterface;
 
 class Authenticate extends \Magento\Framework\App\Action\Action
 {
@@ -36,7 +39,10 @@ class Authenticate extends \Magento\Framework\App\Action\Action
         \Magento\Framework\App\Action\Context $context,
         \Magento\Customer\Model\Session $customerSession,
         \Neyamtux\Authenticator\Lib\PHPGangsta\GoogleAuthenticator $googleAuthenticator,
-        SecretFactory $secretFactory
+        SecretFactory $secretFactory,
+        private readonly DecoderInterface $urlDecoder,
+        private readonly \Laminas\Uri\Uri $uri,
+        private readonly LoggerInterface $logger
     ) {
         $this->_customerSession = $customerSession;
         parent::__construct($context);
@@ -75,7 +81,18 @@ class Authenticate extends \Magento\Framework\App\Action\Action
         } else {
             $secret = $this->secretFactory->create()->load($this->_customerSession->getCustomerId(), 'customer_id')->getSecret();
             if ($this->_authenticateQRCode($secret, $post['code'])) {
-                $redirectUrl = $this->_customerSession->getBefore2faUrl() ?? 'customer/account';
+                $redirectUrl = $this->_customerSession->getBefore2faUrl();
+                $referer = $this->_redirect->getRefererUrl();
+                if(!$redirectUrl && $referer) {
+                    $urlParse = $this->uri->parse($referer);
+                    $parsePath = explode('referer', $urlParse->getPath() ?? '');
+                    $referer = trim(end($parsePath), '/');
+                    $redirectUrl = $referer ? $this->urlDecoder->decode($referer) : null;
+                }
+                if(!$redirectUrl) {
+                    $redirectUrl = 'customer/account';
+                }
+
                 if (!str_contains($redirectUrl, 'checkout')) {
                     $this->messageManager->addSuccessMessage(__('Two Factor Authentication successful'));
                 }

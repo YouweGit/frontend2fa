@@ -35,17 +35,14 @@ class LoginPostPlugin
         }
 
         if ($this->customerSession->get2faSuccessful()) {
-            $this->logger->info('LoginPostPlugin get2faSuccessful true');
             return $result;
         }
 
         /** @var \Magento\Customer\Model\Customer $customer */
         $customer = $this->customerSession->getCustomer();
         if (!$customer->getId() || !$this->customerSession->isLoggedIn()) {
-            $this->logger->info('LoginPostPlugin isLoggedIn false');
             return $result;
         }
-        $this->logger->info('LoginPostPlugin Redirect');
         $resultRedirectFactory = $this->context->getResultRedirectFactory();
         $resultRedirect = $resultRedirectFactory->create();
         if ($this->tfaCheck->is2faConfiguredForCustomer($customer)) {

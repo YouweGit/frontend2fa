@@ -77,34 +77,26 @@ class TfaFrontendCheck implements ObserverInterface
         }
 
         if ($this->customerSession->get2faSuccessful()) {
-            $this->logger->info('TfaFrontendCheck get2faSuccessful true');
             return $this;
         }
 
         /** @var \Magento\Customer\Model\Customer $customer */
         $customer = $this->customerSession->getCustomer();
         if (!$customer->getId() || !$this->customerSession->isLoggedIn()) {
-            $this->logger->info('TfaFrontendCheck isLoggedIn false');
             return $this;
         }
-        $this->logger->info('TfaFrontendCheck isLoggedIn true');
-        $this->logger->info($observer->getEvent()->getRequest()->getFullActionName());
         if (in_array($observer->getEvent()->getRequest()->getFullActionName(),
             $this->tfaCheck->getAllowedRoutes($customer))
         ) {
-            $this->logger->info('TfaFrontendCheck getAllowedRoutes true');
             return $this;
         }
         $currentPage = $this->url->getUrl('*/*/*');
         if ($currentPage && str_contains($currentPage, 'checkout')) {
-            $this->logger->info('TfaFrontendCheck checkout redirect',[$currentPage]);
             $this->customerSession->setBefore2faUrl($currentPage);
         }
         if ($this->tfaCheck->is2faConfiguredForCustomer($customer)) {
-            $this->logger->info('TfaFrontendCheck is2faConfiguredForCustomer true');
             // Redirect to 2FA authentication page
             $redirectionUrl = $this->url->getUrl(TfaCheckInterface::FRONTEND_2_FA_ACCOUNT_AUTHENTICATE_PATH);
-            $this->logger->info('TfaFrontendCheck is2faConfiguredForCustomer redirect',[$redirectionUrl]);
             $observer->getControllerAction()->getResponse()->setRedirect($redirectionUrl);
         } elseif ($this->tfaCheck->isCustomerInForced2faGroup($customer)) {
             // Redirect to 2FA setup page
