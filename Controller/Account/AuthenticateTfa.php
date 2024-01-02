@@ -14,7 +14,7 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Url\DecoderInterface;
 use Psr\Log\LoggerInterface;
 
-class Authenticate extends \Magento\Framework\App\Action\Action
+class AuthenticateTfa extends \Magento\Framework\App\Action\Action
 {
     /**
      * @var \Neyamtux\Authenticator\Lib\PHPGangsta\GoogleAuthenticator

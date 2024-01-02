@@ -14,7 +14,7 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\View\LayoutFactory;
 
-class Setup extends \Magento\Framework\App\Action\Action
+class SetupTfa extends \Magento\Framework\App\Action\Action
 {
     /**
      * @var \Magento\Customer\Model\Session
@@ -85,7 +85,7 @@ class Setup extends \Magento\Framework\App\Action\Action
                 $this->messageManager->addErrorMessage(
                     __('Invalid 2FA Authentication Code')
                 );
-                $this->_redirect('frontend2fa/account/setup');
+                $this->_redirect('customer/account/setuptfa');
             }
 
             return;
