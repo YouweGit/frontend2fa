@@ -85,7 +85,9 @@ class AuthenticateTfa extends \Magento\Framework\App\Action\Action
                 $referer = $this->_redirect->getRefererUrl();
                 if(!$redirectUrl && $referer) {
                     $urlParse = $this->uri->parse($referer);
-                    $parsePath = explode('referer', $urlParse->getPath() ?? '');
+                    $urlPath = $urlParse->getPath() ?? '';
+                    $urlPath = str_contains($urlPath, 'referer') ? $urlPath : '';
+                    $parsePath = explode('referer', $urlPath);
                     $referer = trim(end($parsePath), '/');
                     $redirectUrl = $referer ? $this->urlDecoder->decode($referer) : null;
                 }
@@ -98,6 +100,7 @@ class AuthenticateTfa extends \Magento\Framework\App\Action\Action
                 }
 
                 $this->_customerSession->set2faSuccessful(true);
+                $this->getResponse()->clearHeaders();
                 $this->_redirect($redirectUrl);
             } else {
                 $this->messageManager->addErrorMessage(__('Two Factor Authentication code incorrect'));
