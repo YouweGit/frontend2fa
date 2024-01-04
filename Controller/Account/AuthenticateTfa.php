@@ -100,7 +100,6 @@ class AuthenticateTfa extends \Magento\Framework\App\Action\Action
                 }
 
                 $this->_customerSession->set2faSuccessful(true);
-                $this->getResponse()->clearHeaders();
                 $this->_redirect($redirectUrl);
             } else {
                 $this->messageManager->addErrorMessage(__('Two Factor Authentication code incorrect'));
