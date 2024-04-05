@@ -9,7 +9,7 @@ use Elgentos\Frontend2FA\Api\TfaCheckInterface;
 use Magento\Customer\Controller\Account\LoginPost;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\Controller\AbstractResult;
 use Psr\Log\LoggerInterface;
 
 class LoginPostPlugin
@@ -25,10 +25,10 @@ class LoginPostPlugin
 
     /**
      * @param LoginPost $subject
-     * @param Redirect $result
-     * @return Redirect
+     * @param AbstractResult $result
+     * @return AbstractResult
      */
-    public function afterExecute(LoginPost $subject, Redirect $result): Redirect
+    public function afterExecute(LoginPost $subject, AbstractResult $result): AbstractResult
     {
         if (!$this->config->isEnabled()) {
             return $result;
